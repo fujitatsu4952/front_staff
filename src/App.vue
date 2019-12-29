@@ -1,83 +1,68 @@
 <template>
-  <v-app>
-    <div id="app">
-      <div>
-        <p>ホテルを選択する</p>
-        <select class="select" name id v-model="hotel" >
-          <option  selected >ホテルを選択してください</option>
-          <option  v-for="(item) in res" :key="item.id">{{item.hotel_id}},{{item.hotel_name}}</option>
-        </select>
-      </div>
-
-      <div class="inputWithIcon" >
-        <div style="display:inline-flex">
-          <input placeholder="名前 or 予約番号" type="text" v-model="search" />
-
-          <label>
-            <input type="date" placeholder="日付" v-model="date" />
-          </label>
-        </div>
-        <br />
-        <button class="btn-square-shadow" @click="look">取得</button>
-
-        <table border="1" cellspacing="0" cellpadding="5" bordercolor="efefea">
-        <tr>
-        <th bgcolor="e5e5e5"><font color=black>QRコード表示</font></th>
-        <th bgcolor="e5e5e5" width="150"><font color="black">予約番号</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">チェックイン日</font></th>
-        <th bgcolor="e5e5e5" width="50"><font color="black">泊数</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">宿泊者指名</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">部屋マスタ</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">チェックイン時間</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">status</font></th>
-        <th bgcolor="e5e5e5" width="200"><font color="black">担当</font></th>
-        </tr>
-        <tr bgcolor=white v-for="(finds, idx) in find" :key="finds.id">
-        <td  nowrap><button class="btn-square-shadow" @click="getqr(idx)">QRコード生成</button></td>
-        <td  nowrap>{{finds.reservation_id}}</td>
-        <td  width="150">{{(getDateStatement(finds.checkin_date))}}</td>
-        <td  width="50">{{finds.staying_days}}</td>
-        <td  width="200">{{finds.name}}</td>
-        <td  width="200">{{finds.room_type}}</td>
-        <td  width="200">{{(getTimeStatement(finds.checkingtime))}}</td>
-        <td  width="200" v-if="finds.status === '済'">{{finds.status}}</td>
-        <td  width="200" class="yet" v-if="finds.status === '未'">{{finds.status}}</td>
-        <td  width="200">{{finds.staff_name}}</td>
-        </tr>        
-        </table>
-      </div>
-
-      <footer>
-       <a href="http://localhost:8082/">施設の追加/パスワードの変更はこちら</a>
-      </footer>
+  <div id="app">
+    <div>
+      <select class="select-hotel"  v-model="select_hotel" >
+        <option selected disabled style='display:none;' value=''>ホテルを選択してください</option>
+        <option  v-for="(item) in hotels" :key="item.id">{{item.hotel_id}},{{item.hotel_name}}</option>
+      </select>
     </div>
-  </v-app>
+
+    <div>
+      <input class="input_detail" type="text" placeholder="名前 or 予約番号" v-model="checkin_name_or_id" />
+      <input class="input_detail" type="date" placeholder="日付" v-model="checkin_date"/>              
+      <br/>
+      <button class="btn-square" @click="search">取得</button>
+
+      <table border="2" cellspacing="0" cellpadding="5" bordercolor="efefef">
+        <tr bgcolor="e5e5e5">
+          <th width="120">QRコード表示</th>
+          <th width="150">予約番号</th>
+          <th width="200">チェックイン日</th>
+          <th width="50">泊数</th>
+          <th width="200">宿泊者指名</th>
+          <th width="200">部屋マスタ</th>
+          <th width="200">チェックイン時間</th>
+          <th width="200">status</th>
+          <th width="200">担当</th>
+        </tr>
+          <tr v-for="(searched_result, idx) in search_results" :key="searched_result.id">
+          <td  width="120"><button class="btn-square" @click="getqr(idx)">QRコード生成</button></td>
+          <td  width="150">{{searched_result.reservation_id}}</td>
+          <td  width="150">{{(getDateStatement(searched_result.checkin_date))}}</td>
+          <td  width="50" >{{searched_result.staying_days}}</td>
+          <td  width="200">{{searched_result.name}}</td>
+          <td  width="200">{{searched_result.room_type}}</td>
+          <td  width="200">{{(getTimeStatement(searched_result.checkingtime))}}</td>
+          <!-- 以下二行はチェックイン済みか否かにに応じて描画する -->
+          <td  width="200" v-if="searched_result.status === '済'">{{searched_result.status}}</td>
+          <td  width="200" v-if="searched_result.status === '未'" class="yet">{{searched_result.status}}</td>
+          <td  width="200">{{searched_result.staff_name}}</td>
+        </tr>
+      </table>
+    </div>
+    <br/>
+    <footer>
+    <a href="http://localhost:8082/">施設の追加/パスワードの変更はこちら</a>
+    </footer>
+  </div>
 </template>
 
 <script>
-import Hello from "./components/HelloWorld.vue";
 import { callApi, post } from "./api.js";
 import dayjs from 'dayjs';
 import 'dayjs/locale/ja';
 dayjs.locale('ja');
 
-
-// <title>タグはhtmlに存在するタグなので使えなかった。
-
 export default {
   name: "app",
-  components: {
-    Hello
     // コンポーネントで指定するのはmain.jsに読ませるため。ただ。api.jsファイルからきている{callApi, post}はjava scriptからきているものなのでコンポーネントにまとめる必要はない。
-  },
   data() {
     return {
-      customer: "お客さん情報",
-      res: [],
-      hotel: "",
-      search: "",
-      date: "",
-      find: [],
+      hotels: [],
+      select_hotel: "",
+      checkin_name_or_id: "",
+      checkin_date: "",
+      search_results: [],
       find_time: [],
       status:true,
     };
@@ -87,14 +72,14 @@ export default {
       Api.callApi(url, this.setInfo);
     },
 
-    look() {
+    search() {
       post("http://localhost:3005/api/v1/", {
-        search: this.search,
-        hotel: this.hotel,
-        date: this.date
+        checkin_name_or_id: this.checkin_name_or_id,
+        select_hotel: this.select_hotel,
+        checkin_date: this.checkin_date
       }).then(res => {
         console.log(res.data);
-        this.find = res.data;
+        this.search_results = res.data;
       });
       },
     
@@ -106,30 +91,16 @@ export default {
       return dayjs(time).format('YYYY/MM/DD' );
       },
 
-    goItem() {
-      callApi("http://localhost:3005/api/v1/", {
-        // name: this.name
-      }).then(res => {
-        console.log(res);
-        // this.res = res これはとりあえずresをthis.resに挿入している。
-        // var i = res.data[res.data.length - 1];
-        for (var i = 0; i < res.data.length; i++) {
-          this.res.push(res.data[i]);
-          // 上の一文では配列にpushしている
-        }
-      });
-    },
     getqr(i) {
       location.href = `http://localhost:8081/?z=${this.find[i].name}&bb=${this.find[i].tell_number}&cc=${this.find[i].reservation_id}&dd=${this.find[i].hotel_id}`;
     },
-   
   },
   mounted() {
     callApi("http://localhost:3005/api/v1/").then(data => {
       console.log(JSON.stringify(data.data));
       var i = data.data[data.data.length - 1];
       for (var i = 0; i < data.data.length; i++) {
-        this.res.push(data.data[i]);
+        this.hotels.push(data.data[i]);
       }
     });
   }
@@ -137,118 +108,48 @@ export default {
 </script>
 
 <style>
-table {
-  margin: auto;
-}
-
-tr:hover {
-background-color: #e6e6e6; /* マウスオーバー時の行の背景色 */
-}
-td:hover {
-background-color: rgb(194, 184, 184); /* マウスオーバー時のセルの背景色 */
-}
-
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
   background-color:white;
 }
 
-
-input[type="text"] {
-  width: 300px;
-  border: 2px solid #aaa;
-  border-radius: 4px;
-  margin: 8px 0;
-  outline: none;
-  padding: 8px;
-  box-sizing: border-box;
-  transition: 0.3s;
-}
-
-.yet{
-  background-color: pink;
-}
-
-input[type="text"]:focus {
-  border-color: dodgerBlue;
-  box-shadow: 0 0 8px 0 dodgerBlue;
-}
-
-.inputWithIcon input[type="text"] {
-  padding-left: 40px;
-}
-
-.inputWithIcon {
-  position: relative;
-}
-
-.inputWithIcon i {
-  position: absolute;
-  left: 0;
-  top: 8px;
-  padding: 9px 8px;
-  color: #aaa;
-  transition: 0.3s;
-}
-
-.inputWithIcon input[type="text"]:focus + i {
-  color: dodgerBlue;
-}
-
-.inputWithIcon.inputIconBg i {
-  background-color: #aaa;
-  color: #fff;
-  padding: 9px 4px;
-  border-radius: 4px 0 0 4px;
-}
-
-.inputWithIcon.inputIconBg input[type="text"]:focus + i {
-  color: #fff;
-  background-color: dodgerBlue;
-}
-
-label {
-  position: relative;
-  display: inline-block;
-  width: 250px;
-  height: 45px;
-  border: 2px solid #aaa;
-  border-radius: 15px;
-  margin: 7px 10px;
-}
-input[type="date"] {
-  position: relative;
-  padding: 5px 10px;
-  width: 250px;
-  height: 45px;
-  border: 0;
-  background: transparent;
-  box-sizing: border-box;
-  font-size: 14px;
-  color: #161515;
-}
-
-.select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
+.select-hotel {
+  text-align: center;
   width: 20%;
   height: 40px;
-  background: transparent;
-  position: relative;
-  z-index: 1;
-  padding: 0 40px 0 10px;
+  padding-left: 30px;
   border: 2px solid #b4b3b3;
   border-radius: 4px;
   border-bottom: solid 4px #b4b4b4;
 }
 
-.btn-square-shadow {
+.input_detail {
+  text-align: center;
+  margin: 10px;
+  width: 20%;
+  height: 40px;
+  border: 2px solid #b4b3b3;
+  border-radius: 4px;
+  border-bottom: solid 4px #b4b4b4;
+}
+
+table {
+  margin: auto;
+  }
+  tr:hover {
+  background-color: #e6e6e6; /* マウスオーバー時の行の背景色 */
+  }
+  td:hover {
+  background-color: rgb(194, 184, 184); /* マウスオーバー時のセルの背景色 */
+  }
+  .yet{
+  background-color: pink;
+}
+
+.btn-square {
   width:150px;
   border-radius: 20px;
   display: inline-block;
@@ -257,8 +158,9 @@ input[type="date"] {
   background: #a4a4a4; /*ボタン色*/
   color: #fff;
   border-bottom: solid 4px #b4b4b4;
-}
-.btn-square-shadow:active {
+  font-weight: bold;
+  }
+  .btn-square:active {
   /*ボタンを押したとき*/
   -webkit-transform: translateY(4px);
   transform: translateY(4px); /*下に動く*/
