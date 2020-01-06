@@ -92,7 +92,7 @@ export default {
       },
 
     getqr(i) {
-      location.href = `http://localhost:8081/?z=${this.search_results[i].name}&bb=${this.search_results[i].tell_number}&cc=${this.search_results[i].reservation_id}&dd=${this.search_results[i].hotel_id}`;
+      location.href = `http://localhost:8081/?name=${this.search_results[i].name}&tell=${this.search_results[i].tell_number}&reserve=${this.search_results[i].reservation_id}&hotel=${this.search_results[i].hotel_id}`;
     },
   },
   mounted() {
