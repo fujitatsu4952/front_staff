@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     update_hotel(updated_hotel_name, hotel_id, updated_hotel_pass) {
-      post("http://localhost:3006/app/v1/update", {
+      post("http://localhost:3005/api/v1/update", {
         hotel_name: updated_hotel_name,
         hotel_id: hotel_id,
         hotel_pass: updated_hotel_pass
@@ -70,7 +70,7 @@ export default {
     },
 
     add_new_hotel() {
-      post("http://localhost:3006/app/v1/insert", {
+      post("http://localhost:3005/api/v1/insert", {
         new_hotel_name: this.new_hotel_name,
         new_hotel_id: this.new_hotel_id,
         new_hotel_pass: this.new_hotel_pass
@@ -81,7 +81,7 @@ export default {
   },
 
   mounted() {
-    callApi("http://localhost:3006/app/v1/").then(data => {
+    callApi("http://localhost:3005/api/v1/hotel").then(data => {
       console.log(JSON.stringify(data.data));
       var i = data.data[data.data.length - 1];
       for (var i = 0; i < data.data.length; i++) {

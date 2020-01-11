@@ -19,11 +19,11 @@
           <th width="150">予約番号</th>
           <th width="200">チェックイン日</th>
           <th width="50">泊数</th>
-          <th width="200">宿泊者指名</th>
+          <th width="150">宿泊者指名</th>
           <th width="200">部屋マスタ</th>
           <th width="200">チェックイン時間</th>
-          <th width="200">status</th>
-          <th width="200">担当</th>
+          <th width="100">status</th>
+          <th width="150">担当</th>
         </tr>
         <tr v-for="(searched_result, idx) in search_results" :key="searched_result.id">
           <td width="120">
@@ -33,16 +33,16 @@
           <td width="150">{{(getDateStatement(searched_result.checkin_date))}}</td>
           <td width="50">{{searched_result.staying_days}}</td>
           <td width="200">{{searched_result.name}}</td>
-          <td width="200">{{searched_result.room_type}}</td>
+          <td width="150">{{searched_result.room_type}}</td>
           <td width="200">{{(getTimeStatement(searched_result.checkingtime))}}</td>
           <!-- 以下二行はチェックイン済みか否かにに応じて描画する -->
-          <td width="200" v-if="searched_result.status === '済'">{{searched_result.status}}</td>
+          <td width="100" v-if="searched_result.status === '済'">{{searched_result.status}}</td>
           <td
-            width="200"
+            width="100"
             v-if="searched_result.status === '未'"
             class="yet"
           >{{searched_result.status}}</td>
-          <td width="200">{{searched_result.staff_name}}</td>
+          <td width="150">{{searched_result.staff_name}}</td>
         </tr>
       </table>
     </div>
@@ -74,6 +74,7 @@ export default {
     };
   },
   methods: {
+    
     callApi(url) {
       Api.callApi(url, this.setInfo);
     },

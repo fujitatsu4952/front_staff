@@ -63,7 +63,7 @@ export default {
   // computedという概念。常に保持しているデータの内容が変わるたびに自動でデータ更新がされ続ける。これまで使ってきたmethodの自動化みたいなもの。
   computed: {
     getUrl() {
-      return `http://localhost:8082/qrcode/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
+      return `http://localhost:8081/qrcode/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
     }
   }
 };
