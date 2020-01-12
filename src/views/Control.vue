@@ -106,6 +106,8 @@ export default {
     },
   },
   mounted() {
+    console.log(process.env);
+    console.log(process.env.VUE_APP_API_URL_BASE);
     callApi("http://localhost:3005/api/v1/").then(data => {
       console.log(JSON.stringify(data.data));
       var i = data.data[data.data.length - 1];
