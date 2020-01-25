@@ -5,26 +5,25 @@ import Hotel from './views/Hotel'
 import Qrcode from './views/Qrcode/Qrcodegenerator'
 
 var url = window.location.href;
-    var decoded = decodeURI(url); //日本語が入ったURLクエリにも対応する為のデコード
+var decoded = decodeURI(url); //日本語が入ったURLクエリにも対応する為のデコード
 Vue.use(Router)
 
 export default new Router({
   mode: 'history',
-  routes: [
-    {
+  routes: [{
       path: '/',
       name: 'home',
       component: Home
     },
     {
-    path: '/hotel',
-    name: 'hotel',
-    component: Hotel
-  },
-  {
-    path: '/qrcode',
-    name: 'qrcode',
-    component: Qrcode
-  },
-]
+      path: '/hotel',
+      name: 'hotel',
+      component: Hotel
+    },
+    {
+      path: '/qrcode',
+      name: 'qrcode',
+      component: Qrcode
+    },
+  ]
 })

@@ -1,6 +1,5 @@
 <template>
-  <div id="app">
-
+  <div id="app" class="margintop">
     <div>
       <table border="1" cellspacing="0" cellpadding="5" bordercolor="#efefef" class="table-main">
         <tr>
@@ -39,7 +38,7 @@
       ホテルパスコード:
       <input class="input_new_hotel" type="text" v-model="new_hotel_pass" />
     </p>
-    <br>
+    <br />
     <div>
       <button class="btn-square" @click="add_new_hotel">追加</button>
     </div>
@@ -92,13 +91,15 @@ export default {
 };
 </script>
 
-<style>
+<style >
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+.margintop {
   margin-top: 60px;
 }
 

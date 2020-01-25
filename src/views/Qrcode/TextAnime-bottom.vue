@@ -1,13 +1,14 @@
 <template>
   <div class="TextAnime1">
     <transition-group tag="div" class="title">
-      <span v-for="el in text" :key="el.id" class="item" v-text="el.text"/>
+      <span v-for="el in text" :key="el.id" class="item" v-text="el.text" />
     </transition-group>
   </div>
 </template>
 
 <script>
 export default {
+  props: ["hotel"],
   props: {
     autoplay: Boolean
   },
@@ -17,23 +18,21 @@ export default {
       index: 0,
       // オリジナルメッセージ
       original: [
-        '読み込めない場合はこちらをクリック',
-        'Click here if you can not read',
-        '如果您看不懂，请点击这里',
+        "読み込めない場合はこちらをクリック",
+        "Click here if you can not read",
+        "如果您看不懂，请点击这里"
       ],
       // 分解したメッセージ
       messages: [],
-      text: ''
-    }
+      text: ""
+    };
   },
-  computed: {
-    
-  },
+  computed: {},
   watch: {
     autoplay(val) {
-      clearTimeout(this.timer)
+      clearTimeout(this.timer);
       if (val) {
-        this.ticker()
+        this.ticker();
       }
     }
   },
@@ -42,28 +41,29 @@ export default {
     ticker() {
       this.timer = setTimeout(() => {
         if (this.autoplay) {
-          this.index = this.index < this.messages.length-1 ? this.index + 1 : 0
-          this.text = this.messages[this.index]
-          this.ticker()
+          this.index =
+            this.index < this.messages.length - 1 ? this.index + 1 : 0;
+          this.text = this.messages[this.index];
+          this.ticker();
         }
-      }, 5000)
+      }, 5000);
     },
     // テキストを分解してオブジェクトに
     convText(text) {
-      const alms = {}
-      const result = text.split('').map(el => {
-        alms[el] = alms[el] ? ++alms[el] : 1
-        return { id: `${el}_${alms[el]}`, text: el }
-      })
-      return Object.freeze(result) // 監視しない
+      const alms = {};
+      const result = text.split("").map(el => {
+        alms[el] = alms[el] ? ++alms[el] : 1;
+        return { id: `${el}_${alms[el]}`, text: el };
+      });
+      return Object.freeze(result); // 監視しない
     }
   },
   created() {
-    this.messages = this.original.map(el => this.convText(el))
-    this.text = this.messages[0]
-    this.ticker()
+    this.messages = this.original.map(el => this.convText(el));
+    this.text = this.messages[0];
+    this.ticker();
   }
-}
+};
 </script>
 
 <style scoped>

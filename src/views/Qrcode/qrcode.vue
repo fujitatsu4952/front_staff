@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TextAnimeTop :autoplay="autoplay" />
+    <TextAnimeTop :hotelurl="hotelurl" :autoplay="autoplay" />
     <vue-qrcode :value="getUrl" :options="option" tag="img"></vue-qrcode>
     <!-- v-ifがどんな感じなのかを調べる →指定した先がtrueの場合は実行されるというもの。 -->
     <!-- コロン(:)により静的な値の代わりに、変数、計算されたものなどを（もちろんコンポーネントから）属性値として使用できます。要はv-bindの省略 -->
@@ -41,11 +41,12 @@ export default {
           light: "#FFFFFFFF"
         }
       },
-      url: ""
+      url: "",
+      language: ""
     };
   },
 
-  mounted() {
+  created() {
     var url = window.location.href;
     var decoded = decodeURI(url); //日本語が入ったURLクエリにも対応する為のデコード
     decoded.split("?")[1].split("&");
@@ -57,13 +58,27 @@ export default {
         const parsed = autoform.split("=");
         map[parsed[0]] = parsed[1];
       });
+    console.log(map);
     this.url = map;
+    console.log(map.hotel);
+    this.hotelurl = map.hotel;
+    console.log(this.hotelurl);
+  },
+  mounted() {
+    this.language = window.navigator.language;
+    console.log(this.language);
   },
 
   // computedという概念。常に保持しているデータの内容が変わるたびに自動でデータ更新がされ続ける。これまで使ってきたmethodの自動化みたいなもの。
   computed: {
     getUrl() {
-      return `http://localhost:8081/qrcode/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
+      if (this.language === "ja") {
+        return `http://localhost:8081/qrcode/japanese/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
+      } else if (this.language.startsWith("zh")) {
+        return `http://localhost:8081/qrcode/chinese/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
+      } else {
+        return `http://localhost:8081/qrcode/english/?name=${this.url.name}&tell=${this.url.tell}&reserve=${this.url.reserve}&hotel=${this.url.hotel}`;
+      }
     }
   }
 };

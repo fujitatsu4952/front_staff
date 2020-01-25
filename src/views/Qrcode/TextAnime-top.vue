@@ -1,7 +1,7 @@
 <template>
   <div class="TextAnime1">
     <transition-group tag="div" class="title">
-      <span v-for="el in text" :key="el.id" class="item" v-text="el.text"/>
+      <span v-for="el in text" :key="el.id" class="item" v-text="el.text" />
     </transition-group>
   </div>
 </template>
@@ -9,31 +9,51 @@
 <script>
 export default {
   props: {
-    autoplay: Boolean
+    autoplay: Boolean,
+    hotelurl: String
   },
+
   data() {
     return {
       timer: null,
       index: 0,
       // オリジナルメッセージ
       original: [
-        'HOTEL SHE ,OSAKAへようこそ',
-        'Welcome to HOTEL SHE ,OSAKA',
-        '欢迎光临HOTEL SHE ,OSAKA',
+        "HOTEL SHE ,OSAKAへようこそ",
+        "Welcome to HOTEL SHE ,OSAKA",
+        "欢迎光临HOTEL SHE ,OSAKA"
+      ],
+      originalkyoto: [
+        "HOTEL SHE ,KYOTOへようこそ",
+        "Welcome to HOTEL SHE ,KYOTO",
+        "欢迎光临HOTEL SHE ,KYOTO"
+      ],
+      originalfurano: [
+        "Petit-hotel #melonへようこそ",
+        "Welcome to Petit-hotel #melon",
+        "欢迎光临Petit-hotel #melon"
+      ],
+      originalyugawara: [
+        "The Ryokan Tokyo YUGAWARAへようこそ",
+        "Welcome to The Ryokan Tokyo YUGAWARA",
+        "欢迎光临The Ryokan Tokyo YUGAWARA"
+      ],
+      originalsounkyo: [
+        "HOTEL KUMOIへようこそ",
+        "Welcome to HOTEL KUMOI",
+        "欢迎光临HOTEL KUMOI"
       ],
       // 分解したメッセージ
       messages: [],
-      text: ''
-    }
+      text: ""
+    };
   },
-  computed: {
-    
-  },
+  computed: {},
   watch: {
     autoplay(val) {
-      clearTimeout(this.timer)
+      clearTimeout(this.timer);
       if (val) {
-        this.ticker()
+        this.ticker();
       }
     }
   },
@@ -42,28 +62,45 @@ export default {
     ticker() {
       this.timer = setTimeout(() => {
         if (this.autoplay) {
-          this.index = this.index < this.messages.length-1 ? this.index + 1 : 0
-          this.text = this.messages[this.index]
-          this.ticker()
+          this.index =
+            this.index < this.messages.length - 1 ? this.index + 1 : 0;
+          this.text = this.messages[this.index];
+          this.ticker();
         }
-      }, 5000)
+      }, 5000);
     },
     // テキストを分解してオブジェクトに
     convText(text) {
-      const alms = {}
-      const result = text.split('').map(el => {
-        alms[el] = alms[el] ? ++alms[el] : 1
-        return { id: `${el}_${alms[el]}`, text: el }
-      })
-      return Object.freeze(result) // 監視しない
+      const alms = {};
+      const result = text.split("").map(el => {
+        alms[el] = alms[el] ? ++alms[el] : 1;
+        return { id: `${el}_${alms[el]}`, text: el };
+      });
+      return Object.freeze(result); // 監視しない
+    },
+    hotelText(hotel) {
+      console.log(hotel);
+      if (hotel === "2") {
+        this.messages = this.originalkyoto.map(el => this.convText(el));
+      } else if (hotel === "1") {
+        this.messages = this.originalfurano.map(el => this.convText(el));
+      } else if (hotel === "3") {
+        this.messages = this.original.map(el => this.convText(el));
+      } else if (hotel === "4") {
+        this.messages = this.originalsounkyo.map(el => this.convText(el));
+      } else if (hotel === "5") {
+        this.messages = this.originalyugawara.map(el => this.convText(el));
+      }
+      this.text = this.messages[0];
+      this.ticker();
     }
   },
+
   created() {
-    this.messages = this.original.map(el => this.convText(el))
-    this.text = this.messages[0]
-    this.ticker()
+    console.log("/////");
+    this.hotelText(this.hotelurl);
   }
-}
+};
 </script>
 
 <style scoped>
@@ -87,5 +124,9 @@ export default {
 .v-leave-to {
   opacity: 0;
   transform: translateY(-30px);
+}
+.TextAnime1 {
+  margin: 0 auto;
+  width: 1000px;
 }
 </style>

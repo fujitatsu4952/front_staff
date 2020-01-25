@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="margintop">
     <div>
       <select class="select-hotel" v-model="select_hotel">
         <option selected disabled style="display:none;" value>ホテルを選択してください</option>
@@ -9,7 +9,14 @@
 
     <div>
       <input class="input_detail" type="text" placeholder="名前 or 予約番号" v-model="checkin_name_or_id" />
-      <input class="input_detail" type="date" placeholder="日付" v-model="checkin_date" />
+      <input
+        class="input_detail"
+        type="date"
+        placeholder="日付"
+        v-model="checkin_date"
+        id="today"
+        name="today"
+      />
       <br />
       <button class="btn-square" @click="search">取得</button>
 
@@ -42,13 +49,26 @@
             v-if="searched_result.status === '未'"
             class="yet"
           >{{searched_result.status}}</td>
-          <td width="150">{{searched_result.staff_name}}</td>
+          <td width="150">
+            <input
+              placeholder="担当者入力"
+              class="staff_name"
+              type="text"
+              v-model="searched_result.staff_name"
+            />
+            <button
+              class="staff_button"
+              @click="staff_change(searched_result.staff_name, searched_result.reservation_id, searched_result.hotel_id)"
+            >決定</button>
+          </td>
         </tr>
       </table>
     </div>
     <br />
     <footer>
-      <button @click="onclick"><span style="border-bottom: solid 2px #2c3e50;">施設の追加/パスワードの変更はこちら</span></button>
+      <button @click="onclick">
+        <span style="border-bottom: solid 2px #2c3e50;">施設の追加/パスワードの変更はこちら</span>
+      </button>
     </footer>
   </div>
 </template>
@@ -74,7 +94,6 @@ export default {
     };
   },
   methods: {
-    
     callApi(url) {
       Api.callApi(url, this.setInfo);
     },
@@ -98,14 +117,40 @@ export default {
     },
 
     getqr(i) {
-      this.$router.push({ path: 'qrcode', query: { name: this.search_results[i].name, tell: this.search_results[i].tell_number, reserve: this.search_results[i].reservation_id, hotel:this.search_results[i].hotel_id }});
+      this.$router.push({
+        path: "qrcode",
+        query: {
+          name: this.search_results[i].name,
+          tell: this.search_results[i].tell_number,
+          reserve: this.search_results[i].reservation_id,
+          hotel: this.search_results[i].hotel_id
+        }
+      });
     },
 
     onclick() {
       this.$router.push("/hotel");
     },
+
+    staff_change(search_staff_name, search_reservation_id, search_hotel_id) {
+      post("http://localhost:3005/api/v1/staffname", {
+        staff_name: search_staff_name,
+        reserve: search_reservation_id,
+        hotel: search_hotel_id
+      }).then(res => {
+        console.log(res);
+      });
+    }
   },
+
   mounted() {
+    var today = new Date();
+    today.setDate(today.getDate());
+    var yyyy = today.getFullYear();
+    var mm = ("0" + (today.getMonth() + 1)).slice(-2);
+    var dd = ("0" + today.getDate()).slice(-2);
+    this.checkin_date = yyyy + "-" + mm + "-" + dd;
+    console.log(this.checkin_date);
     console.log(process.env);
     console.log(process.env.VUE_APP_API_URL_BASE);
     callApi("http://localhost:3005/api/v1/").then(data => {
@@ -129,9 +174,9 @@ export default {
 
 .select-hotel {
   text-align: center;
-  width: 20%;
+  width: 22%;
   height: 40px;
-  padding-left: 30px;
+  padding-left: 10px;
   border: 2px solid #b4b3b3;
   border-radius: 4px;
   border-bottom: solid 4px #b4b4b4;
@@ -177,6 +222,13 @@ td:hover {
   transform: translateY(4px); /*下に動く*/
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2); /*影を小さく*/
   border-bottom: none;
+}
+.staff_name {
+  float: left;
+  width: 70%;
+}
+.staff_button {
+  float: right;
 }
 </style>
 
