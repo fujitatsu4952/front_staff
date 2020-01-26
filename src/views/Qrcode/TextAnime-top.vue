@@ -18,27 +18,27 @@ export default {
       timer: null,
       index: 0,
       // オリジナルメッセージ
-      original: [
+      osaka: [
         "HOTEL SHE ,OSAKAへようこそ",
         "Welcome to HOTEL SHE ,OSAKA",
         "欢迎光临HOTEL SHE ,OSAKA"
       ],
-      originalkyoto: [
+      kyoto: [
         "HOTEL SHE ,KYOTOへようこそ",
         "Welcome to HOTEL SHE ,KYOTO",
         "欢迎光临HOTEL SHE ,KYOTO"
       ],
-      originalfurano: [
+      furano: [
         "Petit-hotel #melonへようこそ",
         "Welcome to Petit-hotel #melon",
         "欢迎光临Petit-hotel #melon"
       ],
-      originalyugawara: [
+      yugawara: [
         "The Ryokan Tokyo YUGAWARAへようこそ",
         "Welcome to The Ryokan Tokyo YUGAWARA",
         "欢迎光临The Ryokan Tokyo YUGAWARA"
       ],
-      originalsounkyo: [
+      sounkyo: [
         "HOTEL KUMOIへようこそ",
         "Welcome to HOTEL KUMOI",
         "欢迎光临HOTEL KUMOI"
@@ -79,17 +79,16 @@ export default {
       return Object.freeze(result); // 監視しない
     },
     hotelText(hotel) {
-      console.log(hotel);
       if (hotel === "2") {
-        this.messages = this.originalkyoto.map(el => this.convText(el));
+        this.messages = this.kyoto.map(el => this.convText(el));
       } else if (hotel === "1") {
-        this.messages = this.originalfurano.map(el => this.convText(el));
+        this.messages = this.furano.map(el => this.convText(el));
       } else if (hotel === "3") {
-        this.messages = this.original.map(el => this.convText(el));
+        this.messages = this.osaka.map(el => this.convText(el));
       } else if (hotel === "4") {
-        this.messages = this.originalsounkyo.map(el => this.convText(el));
+        this.messages = this.sounkyo.map(el => this.convText(el));
       } else if (hotel === "5") {
-        this.messages = this.originalyugawara.map(el => this.convText(el));
+        this.messages = this.yugawara.map(el => this.convText(el));
       }
       this.text = this.messages[0];
       this.ticker();
@@ -97,7 +96,6 @@ export default {
   },
 
   created() {
-    console.log("/////");
     this.hotelText(this.hotelurl);
   }
 };

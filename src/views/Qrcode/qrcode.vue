@@ -58,15 +58,11 @@ export default {
         const parsed = autoform.split("=");
         map[parsed[0]] = parsed[1];
       });
-    console.log(map);
     this.url = map;
-    console.log(map.hotel);
     this.hotelurl = map.hotel;
-    console.log(this.hotelurl);
   },
   mounted() {
     this.language = window.navigator.language;
-    console.log(this.language);
   },
 
   // computedという概念。常に保持しているデータの内容が変わるたびに自動でデータ更新がされ続ける。これまで使ってきたmethodの自動化みたいなもの。

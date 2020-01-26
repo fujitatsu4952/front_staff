@@ -58,7 +58,7 @@
             />
             <button
               class="staff_button"
-              @click="staff_change(searched_result.staff_name, searched_result.reservation_id, searched_result.hotel_id)"
+              @click="staffInCharge(searched_result.staff_name, searched_result.reservation_id, searched_result.hotel_id)"
             >決定</button>
           </td>
         </tr>
@@ -132,7 +132,7 @@ export default {
       this.$router.push("/hotel");
     },
 
-    staff_change(search_staff_name, search_reservation_id, search_hotel_id) {
+    staffInCharge(search_staff_name, search_reservation_id, search_hotel_id) {
       post("http://localhost:3005/api/v1/staffname", {
         staff_name: search_staff_name,
         reserve: search_reservation_id,
